@@ -237,8 +237,6 @@ class StandardRobot(Robot):
         self.position = temp_pos
         self.room.cleanTileAtPosition(self.position)
 
-# testRobotMovement(StandardRobot, RectangularRoom)
-
 def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
                   robot_type):
     """
@@ -269,11 +267,6 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
         timeStepNum.append(timeStep)
     return (sum(timeStepNum)/len(timeStepNum))
 
-# Uncomment this line to see how much your simulation takes on average
-print(runSimulation(3, 1.0, 20, 20, 1.00, 100, StandardRobot))
-
-
-# === Problem 5
 class RandomWalkRobot(Robot):
     """
     A RandomWalkRobot is a robot with the "random walk" movement strategy: it
@@ -286,7 +279,13 @@ class RandomWalkRobot(Robot):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        raise NotImplementedError
+        self.direction = random.randint(0, 359)
+        temp_pos = self.position.getNewPosition(self.direction, self.speed)
+        while not(self.room.isPositionInRoom(temp_pos)):
+            self.direction = random.randint(0, 359)    
+            temp_pos = self.position.getNewPosition(self.direction, self.speed)
+        self.position = temp_pos
+        self.room.cleanTileAtPosition(self.position)
 
 
 def showPlot1(title, x_label, y_label):
@@ -307,7 +306,6 @@ def showPlot1(title, x_label, y_label):
     pylab.xlabel(x_label)
     pylab.ylabel(y_label)
     pylab.show()
-
     
 def showPlot2(title, x_label, y_label):
     """
@@ -329,22 +327,26 @@ def showPlot2(title, x_label, y_label):
     pylab.xlabel(x_label)
     pylab.ylabel(y_label)
     pylab.show()
-    
 
-# === Problem 6
-# NOTE: If you are running the simulation, you will have to close it 
-# before the plot will show up.
+# testRobotMovement(StandardRobot, RectangularRoom)
 
-#
-# 1) Write a function call to showPlot1 that generates an appropriately-labeled
-#     plot.
-#
-#       (... your call here ...)
-#
+# print(runSimulation(3, 1.0, 20, 20, 1.00, 100, StandardRobot))
 
-#
-# 2) Write a function call to showPlot2 that generates an appropriately-labeled
-#     plot.
-#
-#       (... your call here ...)
-#
+# width     = 12
+# height    = 15
+# speed     = 1.0
+# delay     = 0.1
+# numRobots = 3
+# min_coverage = 1.0
+# room = RectangularRoom(width, height)
+# robots = [RandomWalkRobot(room, speed) for i in range(numRobots)]
+# anim = ps2_visualize.RobotVisualization(numRobots, width, height, delay)
+# while not(room.getNumCleanedTiles() == min_coverage*room.getNumTiles()):
+#     for i in range(len(robots)):
+#         robots[i].updatePositionAndClean()
+#     anim.update(room, robots)
+# anim.done()
+
+# showPlot1("Time It Takes 1 - 10 Robots To Clean 80% Of A Room", "Number of Robots", "Time Steps")
+
+# showPlot2("Time It Takes Two Robots To Clean 80% Of Variously Shaped Rooms", "Aspect Ratio", "Time Steps")
