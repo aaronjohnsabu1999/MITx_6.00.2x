@@ -3,7 +3,6 @@
 import random
 import pylab
 import copy
-# from ps3b_precompiled_37 import *
 
 class NoChildException(Exception):
     """
@@ -164,8 +163,8 @@ def simulationWithoutDrug(numViruses, maxPop, maxBirthProb, clearProb, numTrials
 
     for i in range(numTrials):
         P1 = Patient(viruses, maxPop)
-        for i in range(300):
-            avgPopSize[i] += P1.update()/numTrials
+        for j in range(300):
+            avgPopSize[j] += P1.update()/numTrials
 
     pylab.plot(avgPopSize, label = "SimpleVirus")
     pylab.title('SimpleVirus simulation')
@@ -374,17 +373,6 @@ class TreatedPatient(Patient):
         returns: The total virus population at the end of the update (an
         integer)
         """
-        for virus in self.viruses:
-            for drug in self.adminDrugs:
-                resistant = True
-                if drug in virus.getResistances().keys():
-                    if not ((virus.getResistances())[drug]):
-                        resistant = False
-                else:
-                    resistant = False
-                if (not resistant) and (virus in self.viruses):
-                    self.viruses.remove(virus)
-
         popDensity = self.getTotalPop()/self.getMaxPop()
         for item in list(self.viruses):
             if(item.doesClear()):
@@ -396,6 +384,7 @@ class TreatedPatient(Patient):
                 continue
         return len(self.viruses)
 
+# from ps3b_precompiled_37 import *
 
 def simulationWithDrug(numViruses, maxPop, maxBirthProb, clearProb, resistances,
                        mutProb, numTrials):
@@ -419,5 +408,29 @@ def simulationWithDrug(numViruses, maxPop, maxBirthProb, clearProb, resistances,
     numTrials: number of simulation runs to execute (an integer)
     
     """
+    viruses = []
+    avgPopSize = [[0 for i in range(300)] for j in range(2)]
+    for i in range(numViruses):
+        viruses.append(ResistantVirus(maxBirthProb, clearProb, resistances, mutProb))
 
-    # TODO
+    for i in range(numTrials):
+        for k in range(2):
+            P1 = TreatedPatient(viruses, maxPop)
+            if (k == 1):
+                P1.addPrescription("guttagonol")
+            for j in range(300):
+                avgPopSize[k][j] += P1.update()
+    for i in range(300):
+        avgPopSize[0][i] /= numTrials
+        avgPopSize[1][i] /= numTrials
+        avgPopSize[0][i] = round(avgPopSize[0][i], 1)
+        avgPopSize[1][i] = round(avgPopSize[1][i], 1)
+
+    print(avgPopSize)
+    pylab.plot(avgPopSize[0], label = "Untreated")
+    pylab.plot(avgPopSize[1], label = "Treated")
+    pylab.title('ResistantVirus simulation')
+    pylab.xlabel('time step')
+    pylab.ylabel('# viruses')
+    pylab.legend(loc='best')
+    pylab.show()
