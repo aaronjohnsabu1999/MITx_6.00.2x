@@ -383,11 +383,9 @@ class TreatedPatient(Patient):
             except NoChildException:
                 continue
         return len(self.viruses)
+    
 
-# from ps3b_precompiled_37 import *
-
-def simulationWithDrug(numViruses, maxPop, maxBirthProb, clearProb, resistances,
-                       mutProb, numTrials):
+def simulationWithDrug(numViruses, maxPop, maxBirthProb, clearProb, resistances, mutProb, numTrials):
     """
     Runs simulations and plots graphs for problem 5.
 
@@ -414,19 +412,21 @@ def simulationWithDrug(numViruses, maxPop, maxBirthProb, clearProb, resistances,
         viruses.append(ResistantVirus(maxBirthProb, clearProb, resistances, mutProb))
 
     for i in range(numTrials):
-        for k in range(2):
-            P1 = TreatedPatient(viruses, maxPop)
-            if (k == 1):
-                P1.addPrescription("guttagonol")
-            for j in range(300):
-                avgPopSize[k][j] += P1.update()
+        P1 = TreatedPatient(viruses, maxPop)
+        for j in range(150):
+            avgPopSize[0][j] += P1.update()
+            avgPopSize[1][j] += P1.getResistPop(['guttagonol'])
+        P1.addPrescription("guttagonol")
+        for j in range(150, 300):
+            avgPopSize[0][j] += P1.update()
+            avgPopSize[1][j] += P1.getResistPop(['guttagonol'])
+
     for i in range(300):
         avgPopSize[0][i] /= numTrials
         avgPopSize[1][i] /= numTrials
         avgPopSize[0][i] = round(avgPopSize[0][i], 1)
         avgPopSize[1][i] = round(avgPopSize[1][i], 1)
 
-    print(avgPopSize)
     pylab.plot(avgPopSize[0], label = "Untreated")
     pylab.plot(avgPopSize[1], label = "Treated")
     pylab.title('ResistantVirus simulation')
